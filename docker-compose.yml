@@ -5,42 +5,40 @@ services:
     image: mysql:8.0
     container_name: booking_db
     environment:
-      MYSQL_ROOT_PASSWORD: secretpassword
-      MYSQL_DATABASE: booking_system
-    volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - app-network
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: room_booking
+    ports:
+      - "3306:3306"
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: booking_keycloak
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
-    networks:
-      - app-network
+    # 👇 Add this to map the data
+    volumes:
+      - keycloak_data:/opt/keycloak/data
 
   booking-app:
     build: ./backend
-    container_name: booking_app
+    container_name: booking_backend
     ports:
       - "3000:3000"
-    environment:
-      - PORT=3000
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASS=secretpassword
-      - DB_NAME=booking_system
     depends_on:
       - db
-      - keycloak
-    networks:
-      - app-network
 
-networks:
-  app-network:
-    driver: bridge
+  frontend:
+    build: ./frontend
+    container_name: booking_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - booking-app
+
+# 👇 Add this at the very bottom
+volumes:
+  keycloak_data:
