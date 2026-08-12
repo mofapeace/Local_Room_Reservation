@@ -2,30 +2,346 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Booking Dashboard</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 2rem; }
-        .card { background: #1e1e1e; padding: 1rem; margin: 1rem 0; border-radius: 8px; border: 1px solid #333; }
-        button { background: #6200ea; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        button:hover { background: #7c4dff; }
-        .status { padding: 0.5rem; margin-bottom: 1rem; border-radius: 4px; background: #333; font-weight: bold; }
+        :root {
+            color-scheme: light;
+            --background: #f0f2f5;
+            --surface: #ffffff;
+            --surface-soft: #f7f9fc;
+            --border: #d8dde6;
+            --text: #1c1e21;
+            --text-muted: #606770;
+            --primary: #1877f2;
+            --primary-dark: #165fc6;
+            --success: #42b72a;
+            --shadow: 0 20px 45px rgba(15,23,42,0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Inter, system-ui, sans-serif;
+            background: linear-gradient(180deg, #ffffff 0%, #eef2f5 100%);
+            color: var(--text);
+        }
+
+        main {
+            width: min(1200px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 2rem 0 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand__logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--primary);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .brand__title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand__subtitle {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .login-layout {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .login-copy h1 {
+            margin: 0;
+            font-size: clamp(2.6rem, 4vw, 3.4rem);
+            line-height: 1.05;
+        }
+
+        .login-copy p {
+            margin: 1.25rem 0 0;
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .login-card {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .login-card h2 {
+            margin: 0 0 1rem;
+            font-size: 1.35rem;
+        }
+
+        .login-field {
+            display: grid;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-field label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .login-field input {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-size: 0.98rem;
+        }
+
+        .login-action {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .button {
+            border: none;
+            border-radius: 12px;
+            padding: 0.95rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .button.primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 12px 28px rgba(24,119,242,0.24);
+        }
+
+        .button.primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .button.secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 20px rgba(15,23,42,0.08);
+        }
+
+        .dashboard {
+            margin-top: 2rem;
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #eef7f0;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .room-grid {
+            display: grid;
+            gap: 1.25rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .room-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 16px 32px rgba(15,23,42,0.08);
+            display: grid;
+            gap: 1rem;
+        }
+
+        .room-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .room-card p {
+            margin: 0;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .room-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.75rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .empty-state {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            box-shadow: 0 16px 32px rgba(15,23,42,0.08);
+        }
+
+        @media (max-width: 960px) {
+            .login-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .topbar,
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .login-card {
+                padding: 1.5rem;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>🔥 Room Booking Dashboard</h1>
-    <div id="auth-status" class="status">Status: Checking Auth...</div>
-    <button onclick="login()">Login with Keycloak</button>
-    <button onclick="logout()">Logout</button>
+    <main>
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand__logo">R</div>
+                <div>
+                    <p class="brand__title">Room Reserve</p>
+                    <p class="brand__subtitle">Professional room management for your team.</p>
+                </div>
+            </div>
+        </div>
 
-    <div id="rooms"></div>
+        <section class="panel">
+            <div class="login-layout">
+                <div class="login-copy">
+                    <h1>Secure workplace room access.</h1>
+                    <p>Sign in using your organization credentials to view room availability, capacities, and booking readiness on a refined dashboard.</p>
+                </div>
+
+                <div class="login-card">
+                    <h2>Sign in to Room Reserve</h2>
+                    <div class="login-field">
+                        <label>Email</label>
+                        <input type="email" placeholder="name@company.com" disabled>
+                    </div>
+                    <div class="login-field">
+                        <label>Password</label>
+                        <input type="password" placeholder="••••••••" disabled>
+                    </div>
+                    <div class="login-action">
+                        <button class="button primary" id="login-button" onclick="login()">Continue with Keycloak</button>
+                        <button class="button secondary" id="logout-button" onclick="logout()" style="display:none;">Logout</button>
+                    </div>
+                    <p style="margin-top:1rem;color:var(--text-muted);font-size:0.95rem;">Authentication is handled by Keycloak. Use the button above to log in safely.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard">
+            <div class="dashboard-header">
+                <div>
+                    <h2>Available Rooms</h2>
+                    <p style="margin:0;color:var(--text-muted);font-size:0.95rem;">Browse rooms after signing in, with information tailored for a professional team.</p>
+                </div>
+                <div class="status-pill" id="auth-status">Checking authentication…</div>
+            </div>
+
+            <div id="rooms" class="room-grid"></div>
+        </section>
+    </main>
 
     <script>
-        // Keycloak Config
         const KEYCLOAK_URL = "http://192.168.1.155:8080/realms/room-booking/protocol/openid-connect/auth";
         const CLIENT_ID = "booking-frontend";
         const REDIRECT_URI = "http://192.168.1.155";
 
-        // Check the URL for a token after Keycloak redirects us back
+        const statusDiv = document.getElementById('auth-status');
+        const roomsContainer = document.getElementById('rooms');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+
+        function setStatus(text, color) {
+            statusDiv.innerText = text;
+            statusDiv.style.color = color;
+        }
+
+        function updateAuthControls(authenticated) {
+            loginButton.style.display = authenticated ? 'none' : 'inline-flex';
+            logoutButton.style.display = authenticated ? 'inline-flex' : 'none';
+        }
+
         function handleAuth() {
             const hash = window.location.hash.substring(1);
             const params = new URLSearchParams(hash);
@@ -33,60 +349,74 @@
 
             if (token) {
                 localStorage.setItem('kc_token', token);
-                window.location.hash = ''; // Clean up the URL
+                window.location.hash = '';
             }
 
             const storedToken = localStorage.getItem('kc_token');
-            const statusDiv = document.getElementById('auth-status');
-            
             if (storedToken) {
-                statusDiv.innerText = "Status: Authenticated 🟢";
-                statusDiv.style.color = "#00e676";
-                loadRooms(); // Fetch data ONLY if we have a token
+                setStatus('Authenticated', 'var(--success)');
+                updateAuthControls(true);
+                loadRooms();
             } else {
-                statusDiv.innerText = "Status: Not Logged In 🔴";
-                statusDiv.style.color = "#ff5252";
+                setStatus('Not logged in', '#707070');
+                updateAuthControls(false);
+                roomsContainer.innerHTML = '<div class="empty-state">Please log in to see available rooms.</div>';
             }
         }
 
-        // Send user to Keycloak login page
         function login() {
             const authUrl = `${KEYCLOAK_URL}?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
             window.location.href = authUrl;
         }
 
-        // Yeet the token and refresh
         function logout() {
             localStorage.removeItem('kc_token');
-            window.location.reload();
+            updateAuthControls(false);
+            setStatus('Not logged in', '#707070');
+            roomsContainer.innerHTML = '<div class="empty-state">You have been logged out.</div>';
         }
 
-        // Fetch rooms from our secure backend
         async function loadRooms() {
+            roomsContainer.innerHTML = '<div class="empty-state">Loading rooms…</div>';
             const token = localStorage.getItem('kc_token');
-            const res = await fetch('http://192.168.1.155:3000/api/rooms', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (!res.ok) {
-                document.getElementById('rooms').innerHTML = '<p>Unauthorized! Backend rejected the request.</p>';
-                return;
+
+            try {
+                const res = await fetch('http://192.168.1.155:3000/api/rooms', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    const message = res.status === 401 ? 'Unauthorized. Please login again.' : 'Unable to load rooms right now.';
+                    roomsContainer.innerHTML = `<div class="empty-state">${message}</div>`;
+                    return;
+                }
+
+                const rooms = await res.json();
+                if (!rooms || rooms.length === 0) {
+                    roomsContainer.innerHTML = '<div class="empty-state">No rooms are available at the moment.</div>';
+                    return;
+                }
+
+                roomsContainer.innerHTML = '';
+                rooms.forEach(room => {
+                    const card = document.createElement('article');
+                    card.className = 'room-card';
+                    card.innerHTML = `
+                        <div>
+                            <h3>${room.name}</h3>
+                            <p>${room.description || 'No description available.'}</p>
+                        </div>
+                        <div class="room-meta">
+                            <span>Capacity: ${room.capacity}</span>
+                        </div>
+                    `;
+                    roomsContainer.appendChild(card);
+                });
+            } catch (error) {
+                roomsContainer.innerHTML = '<div class="empty-state">Network error loading rooms.</div>';
             }
-            
-            const rooms = await res.json();
-            const container = document.getElementById('rooms');
-            container.innerHTML = '';
-            rooms.forEach(room => {
-                container.innerHTML += `
-                    <div class="card">
-                        <h3>${room.name}</h3>
-                        <p>Capacity: ${room.capacity}</p>
-                    </div>
-                `;
-            });
         }
 
-        // Run this immediately when the page loads
         handleAuth();
     </script>
 </body>
