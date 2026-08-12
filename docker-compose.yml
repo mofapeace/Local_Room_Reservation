@@ -4,28 +4,32 @@ services:
   db:
     image: mysql:8.0
     container_name: booking_db
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: room_booking
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: booking_keycloak
+    restart: unless-stopped
     command: start-dev
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
-    # 👇 Add this to map the data
     volumes:
       - keycloak_data:/opt/keycloak/data
 
   booking-app:
     build: ./backend
     container_name: booking_backend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     depends_on:
@@ -34,6 +38,7 @@ services:
   frontend:
     build: ./frontend
     container_name: booking_frontend
+    restart: unless-stopped
     ports:
       - "80:80"
     depends_on:

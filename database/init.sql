@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 -- Seed some mock data so we can test the UI immediately
 INSERT INTO resources (name, capacity, location) VALUES 
-('Alpha Suite', 10, 'Floor 1'),
-('Beta Lab', 25, 'Floor 2'),
-('Omega Boardroom', 5, 'Floor 3');
+('Conference Room', 10, 'Floor 1'),
+('Staff Room', 25, 'Floor 2'),
+('Study Room', 5, 'Floor 3');
