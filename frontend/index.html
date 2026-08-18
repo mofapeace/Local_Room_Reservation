@@ -323,9 +323,9 @@
     </main>
 
     <script>
-        const KEYCLOAK_URL = "http://192.168.1.155:8080/realms/room-booking/protocol/openid-connect/auth";
+        const KEYCLOAK_URL = "http://localhost:8080/realms/room-booking/protocol/openid-connect/auth";
         const CLIENT_ID = "booking-frontend";
-        const REDIRECT_URI = "http://192.168.1.155";
+        const REDIRECT_URI = "http://localhost";
 
         const statusDiv = document.getElementById('auth-status');
         const roomsContainer = document.getElementById('rooms');
@@ -381,7 +381,7 @@
             const token = localStorage.getItem('kc_token');
 
             try {
-                const res = await fetch('http://192.168.1.155:3000/api/rooms', {
+                const res = await fetch('http://localhost:3000/api/rooms', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
